@@ -1,4 +1,6 @@
 '''
+Part 1
+
 At the first Go / No Go poll, every Elf is Go until the Fuel Counter-Upper. 
 They haven't determined the amount of fuel required yet.
 
@@ -30,3 +32,9 @@ assert fuel_requirment(12) == 2
 assert fuel_requirment(14) == 2
 assert fuel_requirment(1969) == 654
 assert fuel_requirment(100756) == 33583
+
+with open('input.txt') as f:
+    module_masses = [int(line.strip()) for line in f]
+    fuel_sum = sum(fuel_requirment(mass) for mass in module_masses)
+
+print(fuel_sum)
