@@ -70,15 +70,15 @@ The fuel required by a module of mass 100756 and its fuel is:
 '''
 
 def fuel_for_fuel(mass: int) -> int:
-    total = 0
+    total_fuel = 0
     
     fuel_for_fuel = fuel_requirement(mass)
 
     while fuel_for_fuel > 0:
-        total += fuel_for_fuel
+        total_fuel += fuel_for_fuel
         fuel_for_fuel = fuel_requirement(fuel_for_fuel)
 
-    return total
+    return total_fuel
 
 assert fuel_for_fuel(14) == 2
 assert fuel_for_fuel(12) == 2
