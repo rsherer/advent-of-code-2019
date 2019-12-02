@@ -32,7 +32,7 @@ def intcode(prog: List[int]) -> List[int]:
             placement = prog[idx + 3]
             prog[placement] = mult_num(prog[p1], prog[p2])
         else:
-            raise ValueError(f"incorrect opcode: {INPUTTEXT[idx]}")
+            raise ValueError(f"incorrect opcode: {prog[idx]}")
 
         idx += 4
     
@@ -87,16 +87,13 @@ def memory(prog: List[int]) -> Tuple[int, int]:
     memory_test = [code for code in prog]
     output = 19690720
 
-    for i in range(100):
-        noun = i
-        for i in range(100):
-            verb = i
+    for noun in range(100):
+        for verb in range(100):
             memory_test[1] = noun
             memory_test[2] = verb
             if intcode(memory_test)[0] == output:
                 return noun, verb
                 break
-            memory_test = [code for code in prog]
-        memory_test = [code for code in prog]
+            memory_test = prog[:]
 
 print(memory(P2TEXT))
