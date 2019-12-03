@@ -7,7 +7,7 @@ central port.
 Manhattan distance is the x-distance plus the y-distance.
 '''
 
-from typing import NamedTuple, List, Set
+from typing import NamedTuple, List, Set, Tuple
 
 class Coord(NamedTuple):
     x: int
@@ -76,4 +76,40 @@ U98,R91,D20,R16,D67,R40,U7,R15,U6,R7 = 410 steps
 What is the fewest combined steps the wires must take to reach an intersection?
 '''
 
+# same idea, just need to track number of steps to each intersection, rather
+# shortest distance from central port
 
+def where_traveled_and_steps(path: str) -> Tuple[Set[Coord], int]:
+    x = 0
+    y = 0
+    num_steps = 0
+
+    coordinates = {}
+
+    for wire in path.split(','):
+        direction = wire[0]
+        length = int(wire[1:])
+
+        for point in range(length):
+            num_steps += 1
+            if direction == 'R':
+                x += 1
+            elif direction == 'L':
+                x -= 1
+            elif direction == 'U':
+                y += 1
+            elif direction == 'D':
+                y -= 1
+
+            port = Coord(x, y)
+            if port not in coordinates:
+                coordinates[port] = num_steps
+    return coordinates
+
+def shortest_steps(p1: str, p2: str) -> int:
+    path1 = where_traveled_and_steps(p1)
+    path2 = where_traveled_and_steps(p2)
+    crosses = set(path1.keys()).intersection(set(path2.keys()))
+    return min([path1[cross] + path2[cross] for cross in crosses])
+
+print(shortest_steps(PATH1, PATH2))
