@@ -22,8 +22,6 @@ these criteria?
 Your puzzle input is 372304-847060.
 '''
 
-def check_password(pwd: int) -> bool:
-    pass
 
 def is_double(pwd: str) -> bool:
     for c1, c2 in zip(pwd, pwd[1:]):
@@ -44,3 +42,17 @@ def is_increasing(pwd: str) -> bool:
 assert is_increasing('111111') == True
 assert is_increasing('223450') == False
 assert is_increasing('123789') == True
+
+def check_password(pwd: int) -> bool:
+    if is_double(str(pwd)) and is_increasing(str(pwd)):
+        return True
+    return False  
+
+assert check_password('111111') == True
+assert check_password('223450') == False
+assert check_password('123789') == False   
+    
+print(sum(check_password(pwd) for pwd in range(372304, 847061)))
+
+
+
