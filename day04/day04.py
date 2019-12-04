@@ -25,12 +25,22 @@ Your puzzle input is 372304-847060.
 def check_password(pwd: int) -> bool:
     pass
 
-def repeats(pwd: str) -> bool:
+def is_double(pwd: str) -> bool:
     for c1, c2 in zip(pwd, pwd[1:]):
         if c1 == c2:
             return True
     return False
 
-assert repeats('111111') == True
-assert repeats('223450') == True
-assert repeats('123789') == False
+assert is_double('111111') == True
+assert is_double('223450') == True
+assert is_double('123789') == False
+
+def is_increasing(pwd: str) -> bool:
+    for c1, c2 in zip(pwd, pwd[1:]):
+        if c1 > c2:
+            return False
+    return True
+
+assert is_increasing('111111') == True
+assert is_increasing('223450') == False
+assert is_increasing('123789') == True
