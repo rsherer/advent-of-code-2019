@@ -1,3 +1,8 @@
+"""
+parts 1 and parts 2 from here:
+https://adventofcode.com/2019/day/5
+"""
+
 from typing import List, Tuple
 
 def get_parameters(param: int) -> Tuple[int, List[int]]:
