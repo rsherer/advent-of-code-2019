@@ -30,8 +30,7 @@ from typing import Tuple
 
 def parse_orbit_map(orbit_map: str) -> Tuple[str, str]:
     'ob1 has ob2 orbiting it'
-    ob1 = ''
-    ob2 = ''
+    ob1, ob2 = '', ''
     for i, char in enumerate(orbit_map):
         if char != ')':
             ob1 += char
@@ -46,3 +45,11 @@ def parse_orbit_map(orbit_map: str) -> Tuple[str, str]:
 assert parse_orbit_map('J1C)J1M') == ('J1C', 'J1M')
 assert parse_orbit_map('N2W)2DM') == ('N2W', '2DM')
 assert parse_orbit_map('DST)VZL') == ('DST', 'VZL')
+
+
+with open('input.txt') as f:
+    mappings = f.readlines()
+    orbit_maps = [parse_orbit_map(mapping.strip('\n')) for mapping in mappings]
+
+print(orbit_maps)
+
