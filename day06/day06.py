@@ -26,9 +26,9 @@ The total number of direct and indirect orbits in this example is 42.
 What is the total number of direct and indirect orbits in your map data?
 """
 
-from typing import Tuple
+from typing import List, Tuple, Dict
 
-def parse_orbit_map(orbit_map: str) -> Tuple[str, str]:
+def parse_orbit_map(orbit_map: str) -> Dict[str, str]:
     'ob1 has ob2 orbiting it'
     ob1, ob2 = '', ''
     for i, char in enumerate(orbit_map):
@@ -42,14 +42,25 @@ def parse_orbit_map(orbit_map: str) -> Tuple[str, str]:
 #print(parse_orbit_map('J1C)J1M'))
 
 #test on first three entries from input
-assert parse_orbit_map('J1C)J1M') == ('J1C', 'J1M')
-assert parse_orbit_map('N2W)2DM') == ('N2W', '2DM')
-assert parse_orbit_map('DST)VZL') == ('DST', 'VZL')
+# assert parse_orbit_map('J1C)J1M') == {'J1C': 'J1M'}
+# assert parse_orbit_map('N2W)2DM') == {'N2W': '2DM'}
+# assert parse_orbit_map('DST)VZL') == {'DST': 'VZL'}
 
 
+# convert oject maps to dictionary of dictionaries
 with open('input.txt') as f:
     mappings = f.readlines()
-    orbit_maps = [parse_orbit_map(mapping.strip('\n')) for mapping in mappings]
+    orbits = dict(parse_orbit_map(mapping.strip('\n')) for mapping in mappings)
+    
+#print(orbit_maps)
+print(orbits)
 
-print(orbit_maps)
+def find_com(orbit_map: List[Tuple[int, int]]) -> None:
+    pass
+
+def create_orbit_tree(orbit_map: List[Tuple[str, str]]):
+    tree = {}
+    root = 'COM'
+    pass
+
 
