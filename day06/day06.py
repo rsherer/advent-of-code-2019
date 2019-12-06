@@ -26,9 +26,10 @@ The total number of direct and indirect orbits in this example is 42.
 What is the total number of direct and indirect orbits in your map data?
 """
 
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, DefaultDict
+from collections import defaultdict
 
-def parse_orbit_map(orbit_map: str) -> Dict[str, str]:
+def parse_orbit_map(orbit_map: str) -> Tuple[str, str]:
     'ob1 has ob2 orbiting it'
     ob1, ob2 = '', ''
     for i, char in enumerate(orbit_map):
@@ -50,17 +51,25 @@ def parse_orbit_map(orbit_map: str) -> Dict[str, str]:
 # convert oject maps to dictionary of dictionaries
 with open('input.txt') as f:
     mappings = f.readlines()
-    orbits = dict(parse_orbit_map(mapping.strip('\n')) for mapping in mappings)
+    orbit_maps = [parse_orbit_map(mapping.strip('\n')) for mapping in mappings]
     
 #print(orbit_maps)
-print(orbits)
 
-def find_com(orbit_map: List[Tuple[int, int]]) -> None:
+def find_com(orbit_map: List[Tuple[str, str]], root) -> int:
+    for i, orbits in enumerate(orbit_map):
+        if orbits[0] == root:
+            return i
+    raise RuntimeError(f"there is no {root} in the orbit map")
+
+def build_orbit_tree(orbit_map: List[Tuple[str, str]]) -> DefaultDict[str, List[str]]:
+    tree: DefaultDict[str, List[str]] = defaultdict(list)
+    for k, v in orbit_map:
+        tree[k].append(v)
+    return tree
+    
+def count_steps(orbit_map: List[Tuple[str, str]], root: str='COM') -> int:
     pass
 
-def create_orbit_tree(orbit_map: List[Tuple[str, str]]):
-    tree = {}
-    root = 'COM'
-    pass
+#    while True:
 
-
+print(build_orbit_tree(orbit_maps))
