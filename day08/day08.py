@@ -63,7 +63,7 @@ for i, layer in enumerate(layers):
         idx = i
 print(f"layer is {idx}")
 
-#answer
+#answer 1064
 print(layers[5].count(1) * layers[5].count(2))
 
 
@@ -122,4 +122,5 @@ def get_image(series: List[int], wide: int, tall: int) -> List[int]:
     for n in range(tall):
         print(message[(n * wide):((n + 1) * wide)])
 
+# hacky print anser is PFCAK
 print(get_image(codes, 25, 6))
