@@ -53,8 +53,6 @@ layers = get_pixel_layers(codes, 25, 6)
 #print(layers)
 
 
-
-
 zeros = 150
 idx = 0
 for i, layer in enumerate(layers):
