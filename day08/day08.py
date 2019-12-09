@@ -49,12 +49,6 @@ def get_pixel_layers(series: List[int], wide: int, tall: int) -> List[List[int]]
         layers.append(series[(n * layer):((n + 1) * layer)])
     return layers
 
-def get_pixel_layers_better(series: List[int], wide: int, tall: int) -> np.ndarray:
-    layers = len(series) / (wide * tall)
-    return np.ndarray(series).reshape(layers, wide, tall)
-
-#print(get_pixel_layers_better(codes, 25, 6))
-
 layers = get_pixel_layers(codes, 25, 6)
 #print(layers)
 
