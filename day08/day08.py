@@ -122,5 +122,5 @@ def get_image(series: List[int], wide: int, tall: int) -> List[int]:
     for n in range(tall):
         print(message[(n * wide):((n + 1) * wide)])
 
-# hacky print anser is PFCAK
+# hacky print answer is PFCAK
 print(get_image(codes, 25, 6))
