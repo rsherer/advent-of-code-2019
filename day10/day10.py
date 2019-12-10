@@ -99,6 +99,7 @@ assert get_distance(p2, p3) == -5
 # each asteroid to the others. shortest distance with the same slope counts as 
 # being since. else it's blocked
 
+# would like to revisit this function and make it a class
 def get_number_detected(belt: List[Point], kind: str='best') -> Point:
     """Finds the number of asteroids detected by each asteroid 
     'kind' is a str to return either the best location with 'best', the number 
