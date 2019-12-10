@@ -24,9 +24,10 @@ The best location for a new monitoring station on this map is the highlighted as
 ...87
 
 """
-from typing import List, NamedTuple, Tuple, Dict
+from typing import List, NamedTuple, Tuple, Dict, Set, Optional
 import math
 from itertools import permutations
+from collections import defaultdict
 
 with open('input.txt') as f:
     asteroid_belt = [row.strip('\n') for row in f.readlines()]
@@ -50,6 +51,7 @@ class Point(NamedTuple):
     y: int
 
 def get_points(belt: List[str]) -> List[Point]:
+    # make a list of Points where there are asteroids
     points = []
     x = y = 0
     for iy, row in enumerate(belt):
@@ -65,15 +67,17 @@ def get_slope(p1: Point, p2: Point) -> float:
     if p1.x - p2.x == 0:
         return math.inf
     else:
-        return round((p1.y - p2.y)/(p1.x - p2.x), 4)
+        return round((p2.y - p1.y)/(p1.x - p2.x), 4)
 
 p1 = Point(1, 0)
 p2 = Point(4, 0)
 p3 = Point(1, 4)
+p4 = Point(2, 1)
 
 assert get_slope(p1, p2) == 0
 assert get_slope(p1, p3) == math.inf
-assert get_slope(p2, p3) == -1.3333
+assert get_slope(p2, p3) == 1.3333
+
 
 def get_distance(p1: Point, p2: Point) -> float:
     # distance is positive if vector goes up, negative if vector goes down
@@ -95,38 +99,89 @@ assert get_distance(p2, p3) == -5
 # each asteroid to the others. shortest distance with the same slope counts as 
 # being since. else it's blocked
 
-def get_number_detected(belt: List[Point]) -> Dict[Point, Tuple[float, str]]:
+def get_number_detected(belt: List[Point], kind: str='best') -> Point:
+    """Finds the number of asteroids detected by each asteroid 
+    'kind' is a str to return either the best location with 'best', the number 
+    of asteroids visible from the each location with 'number', or all the
+    asteroids that can been seen from the best location with 'visible' 
+    """
     detected = {ast: set() for ast in belt}
+    see_the_asteroid = {ast: set() for ast in belt}
 
     for ast1, ast2 in permutations(belt, 2):
-        #print(ast1, ast2)
         slope = get_slope(ast1, ast2)
         dist = get_distance(ast1, ast2)
         sign = 'pos' if dist > 0 else 'neg'
-        #print(f"{ast1} to {ast2} has slope {slope} and distance {dist} and sign {sign}")
+
         if (slope, sign) not in detected[ast1]:
             detected[ast1].add((slope, sign))
+            see_the_asteroid[ast1].add(ast2)
 
-    return {k: len(v) for k, v in detected.items()}
+    number_of_visible = {k: len(v) for k, v in detected.items()}
+    best_location = max(number_of_visible, key=number_of_visible.get)
+    visible_from_best = see_the_asteroid[best_location]
+
+    if kind == 'best':
+        return best_location
+    if kind == 'visible':
+        return visible_from_best
+    else:
+        return number_of_visible
 
 test_num_detected = get_number_detected(test_asteroids)
-print(max(test_num_detected, key=test_num_detected.get))
-print(test_num_detected[max(test_num_detected, key=test_num_detected.get)])
 
-# assert len(test_num_detected[Point(1, 0)]) == 7
-# assert len(test_num_detected[Point(0, 2)]) == 6
-# assert len(test_num_detected[Point(4, 2)]) == 5
-# assert len(test_num_detected[Point(3, 4)]) == 8
 
 asteroids = get_points(asteroid_belt)
-num_detected = get_number_detected(asteroids)
-print(max(num_detected, key=num_detected.get))
-print(num_detected[max(num_detected, key=num_detected.get)])
+best_location = get_number_detected(asteroids)
+num_detected = get_number_detected(asteroids, kind='number')
+visibles = get_number_detected(asteroids, kind='visible')
+#print(best_location)
+#print(num_detected[best_location])
+
 
 #answer is asteroid at Point(26, 36) can detect 347 other asteroids
 
 """Part 2
+Get the 200th asteroid blasted from the detection asteroid. The answer is
+taking the x coordinate * 100 + the y coordinate.
 """
 
+#print(sorted(locations_detected[Point(26, 36)], reverse=True))
+#best_location = locations_detected[Point(26, 36)]
+
+def sort_asteroids(asteroid: Point, asteroids: List[Point]) -> List[Tuple]:
+    # will not use the whole 'belt', but only the visible asteroids
+    angles = defaultdict(list, {num: [] for num in range(8)})
+
+    for x, y in asteroids:
+        dx = x - asteroid.x
+        dy = y - asteroid.y
+
+        if dx == 0 and dy < 0:
+            angles[0].append((get_slope(asteroid, Point(x,y)), Point(x,y)))
+        elif dx > 0 and dy < 0:
+            angles[1].append((get_slope(asteroid, Point(x,y)), Point(x,y)))
+        elif dx > 0  and dy == 0:
+            angles[2].append((get_slope(asteroid, Point(x,y)), Point(x,y)))
+        elif dx > 0 and dy > 0:
+            angles[3].append((get_slope(asteroid, Point(x,y)), Point(x,y)))
+        elif dx == 0 and dy > 0:
+            angles[4].append((get_slope(asteroid, Point(x,y)), Point(x,y)))
+        elif dx < 0 and dy > 0:
+            angles[5].append((get_slope(asteroid, Point(x,y)), Point(x,y)))
+        elif dx < 0 and dy == 0:
+            angles[6].append((get_slope(asteroid, Point(x,y)), Point(x,y)))
+        elif dx < 0 and dy < 0:
+            angles[7].append((get_slope(asteroid, Point(x,y)), Point(x,y)))
+    for key in angles:
+        angles[key] = sorted(angles[key], reverse=True)
+    sorted_asteroids = []
+    for k, v in angles.items():
+        for value in v:
+            sorted_asteroids.append(value)    
+    return sorted_asteroids
+
+vaporizations = sort_asteroids(best_location, visibles)
+print(vaporizations[199])
 
 
