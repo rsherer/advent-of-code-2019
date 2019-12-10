@@ -24,8 +24,64 @@ The best location for a new monitoring station on this map is the highlighted as
 ...87
 
 """
+from typing import List, NamedTuple, Tuple
+import math
 
 with open('input.txt') as f:
     asteroid_belt = [row.strip('\n') for row in f.readlines()]
 
-print(asteroid_belt)
+example_belt = """.#..#
+.....
+#####
+....#
+...##
+"""
+test_belt = example_belt.split('\n')
+
+def get_asteroid_belt_width(belt: List[str]) -> int:
+    return len(belt[0])
+
+assert get_asteroid_belt_width(asteroid_belt) == 42
+assert get_asteroid_belt_width(test_belt) == 5
+
+class Point(NamedTuple):
+    x: int
+    y: int
+
+def asteroid_slope(p1: Point, p2: Point) -> float:
+    if p1.x - p2.x == 0:
+        return math.inf
+    else:
+        return (p1.y - p2.y)/(p1.x - p2.x)
+
+p1 = Point(1, 0)
+p2 = Point(4, 0)
+p3 = Point(1, 4)
+
+assert asteroid_slope(p1, p2) == 0
+assert asteroid_slope(p1, p3) == math.inf
+assert asteroid_slope(p2, p3) == -4/3
+
+def get_points(belt: List[str]) -> List[Point]:
+    points = []
+    x = y = 0
+    for iy, row in enumerate(belt):
+        for ix, ast in enumerate(row):
+            if ast == '#':
+                points.append(Point(ix, iy))
+    return points
+
+test_asteroids = get_points(test_belt)
+print(test_asteroids)
+
+def get_distance(p1: Point, p2: Point) -> float:
+    if p1.x == p2.x:
+        return abs(p1.y - p2.y)
+    if p1.y == p2.y:
+        return abs(p1.x - p2.x)
+    return math.sqrt((p1.x - p2.x)**2 +(p1.y - p2.y)**2)
+
+assert get_distance(p1, p2) == 3
+assert get_distance(p1, p3) == 4
+assert get_distance(p2, p3) == 5
+
