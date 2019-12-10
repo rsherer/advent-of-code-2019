@@ -24,8 +24,9 @@ The best location for a new monitoring station on this map is the highlighted as
 ...87
 
 """
-from typing import List, NamedTuple, Tuple
+from typing import List, NamedTuple, Tuple, Dict
 import math
+from itertools import permutations
 
 with open('input.txt') as f:
     asteroid_belt = [row.strip('\n') for row in f.readlines()]
@@ -48,20 +49,6 @@ class Point(NamedTuple):
     x: int
     y: int
 
-def asteroid_slope(p1: Point, p2: Point) -> float:
-    if p1.x - p2.x == 0:
-        return math.inf
-    else:
-        return (p1.y - p2.y)/(p1.x - p2.x)
-
-p1 = Point(1, 0)
-p2 = Point(4, 0)
-p3 = Point(1, 4)
-
-assert asteroid_slope(p1, p2) == 0
-assert asteroid_slope(p1, p3) == math.inf
-assert asteroid_slope(p2, p3) == -4/3
-
 def get_points(belt: List[str]) -> List[Point]:
     points = []
     x = y = 0
@@ -72,16 +59,74 @@ def get_points(belt: List[str]) -> List[Point]:
     return points
 
 test_asteroids = get_points(test_belt)
-print(test_asteroids)
+#print(test_asteroids)
+
+def get_slope(p1: Point, p2: Point) -> float:
+    if p1.x - p2.x == 0:
+        return math.inf
+    else:
+        return round((p1.y - p2.y)/(p1.x - p2.x), 4)
+
+p1 = Point(1, 0)
+p2 = Point(4, 0)
+p3 = Point(1, 4)
+
+assert get_slope(p1, p2) == 0
+assert get_slope(p1, p3) == math.inf
+assert get_slope(p2, p3) == -1.3333
 
 def get_distance(p1: Point, p2: Point) -> float:
+    # distance is positive if vector goes up, negative if vector goes down
+    # vector that goes right is positive, left is negative
     if p1.x == p2.x:
-        return abs(p1.y - p2.y)
+        return (p1.y - p2.y)
     if p1.y == p2.y:
-        return abs(p1.x - p2.x)
-    return math.sqrt((p1.x - p2.x)**2 +(p1.y - p2.y)**2)
+        return (p2.x - p1.x)
+    if p1.y > p2.y:
+        return math.sqrt((p1.x - p2.x)**2 +(p1.y - p2.y)**2)
+    else:
+        return -math.sqrt((p1.x - p2.x)**2 +(p1.y - p2.y)**2)
 
 assert get_distance(p1, p2) == 3
-assert get_distance(p1, p3) == 4
-assert get_distance(p2, p3) == 5
+assert get_distance(p1, p3) == -4
+assert get_distance(p2, p3) == -5
+
+# now go through all the asteroids, and find the distance and slopes from 
+# each asteroid to the others. shortest distance with the same slope counts as 
+# being since. else it's blocked
+
+def get_number_detected(belt: List[Point]) -> Dict[Point, Tuple[float, str]]:
+    detected = {ast: set() for ast in belt}
+
+    for ast1, ast2 in permutations(belt, 2):
+        #print(ast1, ast2)
+        slope = get_slope(ast1, ast2)
+        dist = get_distance(ast1, ast2)
+        sign = 'pos' if dist > 0 else 'neg'
+        #print(f"{ast1} to {ast2} has slope {slope} and distance {dist} and sign {sign}")
+        if (slope, sign) not in detected[ast1]:
+            detected[ast1].add((slope, sign))
+
+    return {k: len(v) for k, v in detected.items()}
+
+test_num_detected = get_number_detected(test_asteroids)
+print(max(test_num_detected, key=test_num_detected.get))
+print(test_num_detected[max(test_num_detected, key=test_num_detected.get)])
+
+# assert len(test_num_detected[Point(1, 0)]) == 7
+# assert len(test_num_detected[Point(0, 2)]) == 6
+# assert len(test_num_detected[Point(4, 2)]) == 5
+# assert len(test_num_detected[Point(3, 4)]) == 8
+
+asteroids = get_points(asteroid_belt)
+num_detected = get_number_detected(asteroids)
+print(max(num_detected, key=num_detected.get))
+print(num_detected[max(num_detected, key=num_detected.get)])
+
+#answer is asteroid at Point(26, 36) can detect 347 other asteroids
+
+"""Part 2
+"""
+
+
 
